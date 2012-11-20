@@ -509,7 +509,8 @@ class CouchbaseClient(object):
             self.restart_vbucket_connection(self.vbucketid(item['key']))
             raise MemcachedTimeoutException(item, timeout)
         if "error" in item["response"]:
-            raise item["response"]["error"]
+            if item["operation"] is not "get" or not ("Not found" in str(item["response"]["error"])):
+                raise item["response"]["error"]
         return item["response"]["return"]
 
     def get(self, key):
